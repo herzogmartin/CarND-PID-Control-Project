@@ -33,58 +33,51 @@ Self-Driving Car Engineer Nanodegree Program
 3. Compile: `cmake .. && make`
 4. Run it: `./pid`. 
 
-## Editor Settings
+# Reflection of implementing PID-control
+After PID was working in principle manual initial controler weights were chosen. 
+Afterwards twiddle was used to optimize the weights. The simulator is automatically
+reseted if the vehicle leaves the track. The weights are only used if the driven 
+distance is long enough and the error of the summed absolute cross track error (cte)
+is getting smaller.
 
-We've purposefully kept editor configuration files out of this repo in order to
-keep it as simple and environment agnostic as possible. However, we recommend
-using the following settings:
 
-* indent using spaces
-* set tab width to 2 spaces (keeps the matrices in source code aligned)
+## Initial P-Part
+Kp is always steering towards the center. A high Kp is reaching faster the center of 
+the track but results in overshooting the middle. A start value of 0.1 was chosen.
 
-## Code Style
+## Initial D-Part
+Kd is damping the oscillation of the controler. This result in a smoother approach
+of the middle position and less overshooting. A start value of 1.0 was chosen.
 
-Please (do your best to) stick to [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html).
+## Initial I-Part
+Ki is responsible to eliminate the static control error. But the I-part tends to
+make the controler unstable.
 
-## Project Instructions and Rubric
+For steering PID a start value of 0 was chosen. The value was chosen by twiddle.
 
-Note: regardless of the changes you make, your project must be buildable using
-cmake and make!
+For speed PID-control a value of 0.005 was tested and sufficent to hold the speed. 
+The speed control was not optimized any more but this could also be done with twiddle.
 
-More information is only accessible by people who are already enrolled in Term 2
-of CarND. If you are enrolled, see [the project page](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/f1820894-8322-4bb3-81aa-b26b3c6dcbaf/lessons/e8235395-22dd-4b87-88e0-d108c5e5bbf4/concepts/6a4d8d42-6a04-4aa6-b284-1697c0fd6562)
-for instructions and the project rubric.
+## Optimization with twiddle
+If the `#define TWIDDLE_ON` statement is set to `1` twiddle optimization is done for steering PID.
+In the final release it is set to `0`.
 
-## Hints!
+Twiddle was performed with 60 mph. For the finial release the target
+speed is set to 50 mph. This can be changed with `#define TARGET_SPEED`.
 
-* You don't have to follow this directory structure, but if you do, your work
-  will span all of the .cpp files here. Keep an eye out for TODOs.
+## Final controler weights 
+The following final controler weights are chosen with twiddle:
 
-## Call for IDE Profiles Pull Requests
+* Kp = 0.116
+* Kd = 1.86086
+* Ki = 0.00252475
 
-Help your fellow students!
+## Outlook
+It would be possible to change the target speed depending on the steering angle.
+From the steering angle, the speed and the wheel base the lateral acceleration of the vehicle can
+be calculated. The the target speed could be limited so that the lateral acceleration
+is not too high.
 
-We decided to create Makefiles with cmake to keep this project as platform
-agnostic as possible. Similarly, we omitted IDE profiles in order to we ensure
-that students don't feel pressured to use one IDE or another.
-
-However! I'd love to help people get up and running with their IDEs of choice.
-If you've created a profile for an IDE that you think other students would
-appreciate, we'd love to have you add the requisite profile files and
-instructions to ide_profiles/. For example if you wanted to add a VS Code
-profile, you'd add:
-
-* /ide_profiles/vscode/.vscode
-* /ide_profiles/vscode/README.md
-
-The README should explain what the profile does, how to take advantage of it,
-and how to install it.
-
-Frankly, I've never been involved in a project with multiple IDE profiles
-before. I believe the best way to handle this would be to keep them out of the
-repo root to avoid clutter. My expectation is that most profiles will include
-instructions to copy files to a new location to get picked up by the IDE, but
-that's just a guess.
-
-One last note here: regardless of the IDE used, every submitted project must
-still be compilable with cmake and make./
+If this would be done the speed PID needs to do more and its controler weights
+should be optimized (e.g. with twiddle).
+ 
